@@ -1,7 +1,15 @@
 const express = require('express');
+const ProductManager = require('./ProductManager');
 const fs = require('fs/promises');
 const app = express();
 const port = 8080;
+app.use(express.json());
+// Importa el enrutador del carrito
+const cartRouter = require('./cartRouter');
+// Usa el enrutador del carrito en la ruta '/api/carts'
+app.use('/api/carts', cartRouter);
+
+const productManager = new ProductManager();
 
 app.get('/products', async (req, res) => {
     try {
@@ -37,6 +45,68 @@ app.get('/products', async (req, res) => {
       res.status(500).json({ error: 'Error al leer los productos' });
     }
   });
+
+  app.get('/products/:pid', async (req, res) => {
+    try {
+      const productId = parseInt(req.params.pid);
+      const product = await productManager.getProductsById(productId);
+  
+      if (!product) {
+        res.status(404).json({ error: 'Producto no encontrado' });
+        return;
+      }
+  
+      res.json({ product });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al obtener el producto por ID' });
+    }
+  });
+
+  app.delete('/products/:pid', async (req, res) => {
+    try {
+      const productId = parseInt(req.params.pid);
+      const isDeleted = await productManager.deleteProductById(productId);
+  
+      if (!isDeleted) {
+        res.status(404).json({ error: 'Producto no encontrado. No se pudo eliminar.' });
+        return;
+      }
+  
+      res.json({ message: 'Producto eliminado con éxito' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al eliminar el producto por ID' });
+    }
+  });
+
+  app.put('/:pid', (req, res) => {
+    try {
+      const productId = parseInt(req.params.pid);
+      const productToUpdate = productManager.getProductsById(productId);
+  
+      if (!productToUpdate) {
+        res.status(404).json({ error: 'Producto no encontrado' });
+        return;
+      }
+  
+      const updatedFields = req.body;
+      // Asegúrate de que el ID no se actualice
+      delete updatedFields.id;
+  
+      // Actualiza los campos del producto con los valores proporcionados
+      Object.assign(productToUpdate, updatedFields);
+  
+      // Guarda los productos actualizados en el archivo
+      productManager.saveProducts();
+  
+      res.json({ message: 'Producto actualizado con éxito', product: productToUpdate });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al actualizar el producto' });
+    }
+  });
+
   
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
