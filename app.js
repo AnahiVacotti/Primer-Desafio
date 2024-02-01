@@ -1,15 +1,67 @@
+// Importa los módulos necesarios
 const express = require('express');
+const http = require('http');
+const socketIO = require('socket.io');
+const path = require('path');
+const expressWs = require('express-ws');
+const handlebars = require('express-handlebars');
 const ProductManager = require('./ProductManager');
 const fs = require('fs/promises');
-const app = express();
+
+
+//Configura el puerto
 const port = 8080;
-app.use(express.json());
-// Importa el enrutador del carrito
-const cartRouter = require('./cartRouter');
-// Usa el enrutador del carrito en la ruta '/api/carts'
-app.use('/api/carts', cartRouter);
+
+// Crea una aplicación Express
+const app = express();
+app.use(express.json())
+const server = http.createServer(app);
+const io = socketIO(server);
+expressWs(app);
+
+// Configura Handlebars como motor de plantillas
+app.engine('hbs', handlebars({ extname: 'hbs' }));
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
 
 const productManager = new ProductManager();
+
+//Websocket
+app.ws('/ws', (ws, req) => {
+  ws.on('message', (msg) => {
+    console.log(`Mensaje recibido: ${msg}`);
+    ws.send('Mensaje recibido en el servidor.');
+  });
+});
+
+ // Socket.IO
+ io.on('connection', (socket) => {
+  console.log('Nuevo usuario conectado');
+
+  // Envía la lista de productos a un nuevo cliente
+  socket.emit('updateProducts', productManager.getProducts());
+
+  // Escucha el evento cuando se agrega un nuevo producto y emite la actualización a todos los clientes
+  productManager.on('productAdded', () => {
+    io.emit('updateProducts', productManager.getProducts());
+  });
+
+  // Escucha el evento cuando se elimina un producto y emite la actualización a todos los clientes
+  productManager.on('productDeleted', () => {
+    io.emit('updateProducts', productManager.getProducts());
+  });
+});
+
+// Rutas
+app.get('/', (req, res) => {
+  const products = productManager.getProducts();
+  res.render('home', { products });
+});
+
+app.get('/realtimeproducts', (req, res) => {
+  const products = productManager.getProducts();
+  res.render('realTimeProducts', { products });
+});
 
 app.get('/products', async (req, res) => {
     try {
@@ -106,6 +158,31 @@ app.get('/products', async (req, res) => {
       res.status(500).json({ error: 'Error al actualizar el producto' });
     }
   });
+
+  app.post('/addProduct', (req, res) => {
+    try {
+        const { title, description, code, price, stock, category } = req.body;
+        const newProduct = {
+            title,
+            description,
+            code,
+            price,
+            stock,
+            category
+        };
+
+        // Agrega el nuevo producto utilizando el método addProduct del ProductManager
+        productManager.addProduct(newProduct);
+
+        // Emite el evento de producto agregado a través de WebSockets
+        io.emit('updateProducts', productManager.getProducts());
+
+        res.json({ message: 'Producto agregado con éxito', product: newProduct });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al agregar el producto' });
+    }
+});
 
   
   app.listen(port, () => {

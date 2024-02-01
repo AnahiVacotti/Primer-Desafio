@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Lista de Productos</title>
+  <!-- Puedes agregar aquí tus enlaces a hojas de estilo, scripts, etc. -->
+</head>
+
+<body>
+
+  <h1>Lista de Productos</h1>
+
+  <ul id="productList">
+    {{#each products}}
+      <li>{{this.title}} - {{this.price}} -{{this.stock}}</li>
+    {{/each}}
+  </ul>
+
+</body>
+
+</html>
