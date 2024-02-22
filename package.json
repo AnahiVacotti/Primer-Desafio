@@ -1,19 +1,19 @@
 {
-  "name": "desafio",
+  "name": "proyecto-final-primera-entrega",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon ./src/app.js"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "express-handlebars": "^5.3.3",
-    "express-ws": "^5.0.2",
-    "handlebars": "^4.7.8",
-    "socket.io": "^4.7.4",
-    "socket.io-client": "^4.7.4"
+    "express-handlebars": "^7.1.2",
+    "mongoose": "^8.1.1",
+    "socket.io": "^4.7.4"
   }
 }
