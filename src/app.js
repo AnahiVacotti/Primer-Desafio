@@ -35,7 +35,7 @@ app.use('/', cartsRouter)
 app.use('/', chatRouter)
 
 //Connection DB
-mongoose.connect('mongodb+srv://markutz:cc9U0spYKfF6vZwD@cluster0.8r0sqah.mongodb.net/ecommerce?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0')
     .then(() => {
         console.log('Connected to the database')
     })
