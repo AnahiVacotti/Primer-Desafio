@@ -10,6 +10,7 @@ import { chatModel } from './dao/models/chat.model.js'
 import { productModel } from './dao/models/product.model.js'
 import mongoose from 'mongoose'
 
+
 /* const productManager = new ProductManager('./src/data/products.json') */
 
 const port = 8080
@@ -35,13 +36,21 @@ app.use('/', cartsRouter)
 app.use('/', chatRouter)
 
 //Connection DB
-mongoose.connect('mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0')
-    .then(() => {
-        console.log('Connected to the database')
-    })
-    .catch(() => {
-        console.log('Error connecting to database')
-    })
+const enviroment = async () => {
+    await mongoose.connect 
+    ('mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0')
+    let response = await productModel.find().explain('executionStats')
+    console.log(response)
+}
+
+enviroment ()
+//mongoose.connect('mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0')
+    //.then(() => {
+       // console.log('Connected to the database')
+    //})
+    //.catch(() => {
+        //console.error('Error connecting to database', error)
+    //})
 
 //Connection WS
 io.on('connection', (socket) => {
@@ -106,7 +115,7 @@ io.on('connection', (socket) => {
                 socket.emit('deleteProduct', 'Not found')
             }
         } catch (error) {
-            //Verify CastError
+            //Verify CastError 
             if (error instanceof mongoose.CastError) {
                 socket.emit('deleteProduct', 'Error: ID Product not valid');
             } else {

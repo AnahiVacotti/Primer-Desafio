@@ -3,6 +3,7 @@ import { productModel } from "../dao/models/product.model.js"
 
 const productsRouter = Router()
 
+
 //Render on front with handlebars with IO
 productsRouter.get('/', async (req, res) => {
     try {
@@ -50,6 +51,33 @@ productsRouter.get('/api/products/:id', async (req, res) => {
         res.status(404).send({ result: 'Error', message: 'Not found' })
     }
 })
+
+//prueba de ruta
+productsRouter.get('/products', async (req, res) => {
+    const allProducts = await productModel.find({}, { _id: 0, __v: 0 }).lean();
+    let page = parseInt(req.query.page);
+    if (!page) page = 1;
+
+    // Usar lean
+    let result = await productModel.paginate({}, { page, limit: 5, lean: true });
+    result.prevLink = result.hasPrevPage ? `http://localhost:8080/api/products?page=${result.prevPage}` : '';
+    result.nextLink = result.hasNextPage ? `http://localhost:8080/api/products?page=${result.nextPage}` : '';
+    result.isValid = !(page <= 0 || page > result.totalPages);
+
+    // Pasar allProducts y result como parámetros
+    const datosVista = {
+        allProducts: allProducts,
+        result: result
+    };
+
+    // Renderizar la vista con los datos
+    res.render('products', datosVista);
+});
+//productsRouter.get('/cart', async (req, res) =>{
+   // let carrito = parseInt(req.query.page);
+   // if (carrito) carrito = 5
+    //res.render('cart', result)
+//})
 
 //Add new product
 productsRouter.post('/api/products', async (req, res) => {
