@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 class ProductManager {
-    constructor(pathFile) {
+    constructor() {
         this.path = pathFile
         this.id = 0
         this.initialize()
@@ -53,6 +53,28 @@ class ProductManager {
         }
     }
 
+
+    async getProducts  (page, limit, sortOrder, category) {
+    try {
+        const opc = {
+            page: page || 1,
+            limit: limit || 3,
+            sort: sortOrder ? {price: sortOrder === 'asc' ? 1 : -1 } : null
+        };
+
+        const query = category ? {category : category} : {};
+
+        return await this.model.paginate(query, opc);
+        
+
+    } catch (error) {
+        console.log ('Error');
+   }}
+
+
+
+
+
     async getProducts() {
         try {
             const data = await fs.promises.readFile(this.path, 'utf-8')
@@ -61,6 +83,10 @@ class ProductManager {
             return []
         }
     }
+
+    
+
+
 
     async getProductBytId(id) {
         const products = await this.getProducts()

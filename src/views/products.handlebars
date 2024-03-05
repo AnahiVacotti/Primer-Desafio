@@ -1,7 +1,11 @@
+<html>
+
+<body>
+
 
 {{#if result.isValid}}
     <h1 class="title_products">Productos</h1>
-    {{#each allProducts}}
+    {{#each result.docs}}
     <ul class="product_box">
         <li>
             <h2>{{title}}</h2>
@@ -16,15 +20,15 @@
 <br />
 <div>
     {{#if result.hasPrevPage}}
-    <a href = {{this.prevLink}}>
+    <a href = {{result.prevLink}}>
         Anterior  
         </a>
         {{/if}}
         &nbsp;
-        {{this.page}}
+        {{result.page}}
         &nbsp;
         {{#if result.hasNextPage}}
-        <a href = {{this.nextPage}}>
+        <a href="{{result.nextLink}}">
             Siguiente
         </a>
         {{/if}}
@@ -32,3 +36,6 @@
 {{else}}
 <h1>No hay productos para mostrar</h1>
 {{/if}}
+
+</html>
+</body>

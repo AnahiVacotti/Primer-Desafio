@@ -1,1 +1,32 @@
-<h1>Carrito:</h1>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart View</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <h1>Cart View</h1>
+    <h2>Cart ID: <%= cart._id %></h2>
+    
+    <% if (cart.products.length > 0) { %>
+        <ul>
+            <% cart.products.forEach(product => { %>
+                <li>
+                    <h3><%= product.product.title %></h3>
+                    <p>Description: <%= product.product.description %></p>
+                    <p>Price: $<%= product.product.price %></p>
+                    <p>Quantity: <%= product.quantity %></p>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No products in the cart.</p>
+    <% } %>
+
+
+
+</body>
+</html>
