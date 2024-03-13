@@ -55,6 +55,7 @@ productsRouter.get("/api/products/:id", async (req, res) => {
 productsRouter.get("/products", (req, res) => {
     res.redirect("/products/1");
   });
+  
 
 //rutaprueba
 productsRouter.get("/products/:page", async (req, res) => {
