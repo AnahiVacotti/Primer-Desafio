@@ -36,7 +36,11 @@ viewsRouter.get('/login', redirectIfAuthenticated, (req, res) => {
 });
 
 viewsRouter.get('/profile',isAuthenticated , (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'profile.html')); // Renderiza la vista de perfil
+    // Obtener los datos del usuario de la sesión
+    const { firstName, lastName, age, email } = req.session.user;
+
+    // Renderizar la vista de perfil y pasar los datos del usuario
+    res.render('profile', { firstName, lastName, age, email });
 });
 
 export default viewsRouter;

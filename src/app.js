@@ -9,6 +9,7 @@ import chatRouter from './routes/chat.router.js'
 import { chatModel } from './dao/models/chat.model.js'
 import { productModel } from './dao/models/product.model.js'
 import mongoose from 'mongoose'
+import sessionsRouter from './routes/sessions.router.js'
 
 
 /* const productManager = new ProductManager('./src/data/products.json') */

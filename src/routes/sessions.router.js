@@ -1,6 +1,5 @@
 import express from 'express';
-import bcrypt from 'bcrypt';
-import { userModel } from '../dao/models/user.model.js';
+import userModel from '../dao/models/user.model.js';
 
 const sessionsRouter = express.Router();
 
@@ -17,13 +16,12 @@ sessionsRouter.post('/api/sessions/register', async (req, res) => {
         }
 
         // Crear un nuevo usuario
-        const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await userModel.create({
             first_name,
             last_name,
             email,
             age,
-            password: hashedPassword,
+            password
         });
 
         res.status(201).json({ message: 'User registered successfully', user: newUser });
