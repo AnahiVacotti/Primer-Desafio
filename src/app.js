@@ -34,6 +34,7 @@ app.use(express.static(__dirname + '/public'))
 app.use('/', productsRouter)
 app.use('/', cartsRouter)
 app.use('/', chatRouter)
+app.use('/api/sessions', sessionsRouter);
 
 //Connection DB
 const enviroment = async () => {
