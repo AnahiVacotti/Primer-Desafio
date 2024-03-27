@@ -1,9 +1,21 @@
 import express from 'express'
 import session from 'express-session'
+import router from './routes/views.router'
 
+const User = require("..models/user")
 const app = express()
 const PORT = 8080
 
+router.post("register", async (req, res)=>{
+    try{
+        const {first_name, last_name, email, age, password} =req.body
+        const user = new User ({first_name, last_name, email, age, password})
+        await user.save
+        res.redirect("/login")
+        } catch (error){
+            res.status(500).send("Error de registro")
+        }
+})
 app.use(session({
     secret: 'secretCoder',
     resave:true,

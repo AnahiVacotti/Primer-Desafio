@@ -1,8 +1,13 @@
 import cookieParser from "cookie-parser";
 import express from 'express';
+import session from "express-session";
+import { FileStore } from "session-file-store";
 
+const fileStorage = FileStore(session)
 const app = express()
 const PORT = 8080
+app.use(cookieParser())
+
 
 app.get ('/', (req, res) =>{
     res.send("bienvenido")

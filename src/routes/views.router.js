@@ -1,7 +1,60 @@
 import express from 'express';
+const router = express.Router()
+
+router.get("/profile", (req, res) =>{
+    if (!req.session.user) {
+        return res.redirect('/login')
+    }
+    const {first_name, last_name, email, age} = req.session.user
+    res.render("profile", {first_name, last_name, email, age})
+})
+router.get("/login", (req, res)=>{
+    res.render("login")
+})
+    export default router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* import express from 'express';
 import path from 'path';
 
 const viewsRouter = express.Router();
+const express =require("express")
 
 // Middleware de autenticación
 const isAuthenticated = (req, res, next) => {
@@ -43,4 +96,4 @@ viewsRouter.get('/profile',isAuthenticated , (req, res) => {
     res.render('profile', { firstName, lastName, age, email });
 });
 
-export default viewsRouter;
+export default viewsRouter; */

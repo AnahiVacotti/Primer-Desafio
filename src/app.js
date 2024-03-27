@@ -10,12 +10,43 @@ import { chatModel } from './dao/models/chat.model.js'
 import { productModel } from './dao/models/product.model.js'
 import mongoose from 'mongoose'
 import sessionsRouter from './routes/sessions.router.js'
-
+import cookieParser from 'cookie-parser'
+import session from 'express-session'
+import  FileStore  from 'session-file-store'
+import MongoStore from 'connect-mongo'
+import viewsRouter from './routes/views.router.js';
 
 /* const productManager = new ProductManager('./src/data/products.json') */
-
+const fileStorage = FileStore(session)
 const port = 8080
 const app = express()
+app.use (cookieParser())
+app.use(express.urlencoded({ extended:true}))
+
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl:"mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0"
+        
+    }),
+    secret: "123456789",
+    resave: false,
+    saveUninitialized:false
+}))
+
+app.use("/api/session", sessionsRouter)
+app.use ("/", viewsRouter)
+
+app.get ('/login', (req, res)=>{
+    const {username, password} = req.query
+    if(username!== "ani" || password!=="vacotti"){
+        return res.send('inicio de sesion invalida')
+    }
+
+    req.session.user = username
+    req.session.admin=true
+    res.send('inicio exitoso')
+})
+
 const httpServer = app.listen(port, () => console.log(`'Server online - PORT ${port}`))
 
 //Socket server
