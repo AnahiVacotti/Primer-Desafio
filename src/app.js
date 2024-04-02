@@ -15,26 +15,44 @@ import session from 'express-session'
 import  FileStore  from 'session-file-store'
 import MongoStore from 'connect-mongo'
 import viewsRouter from './routes/views.router.js';
+import bodyParser from 'body-parser';
 
-/* const productManager = new ProductManager('./src/data/products.json') */
-const fileStorage = FileStore(session)
-const port = 8080
 const app = express()
-app.use (cookieParser())
+const port = 8080
+
+
+const fileStorage = FileStore(session)
+
+// Configuración básica del middleware de sesión
+app.use(session({
+    secret: 'anahivacotti', // Establece un secreto para firmar la cookie de sesión
+    resave: false,       // No fuerza a la sesión a ser guardada de nuevo si no fue modificada
+    saveUninitialized: false, // No guarda la sesión si es nueva y no se ha modificado
+    cookie: { secure: false } // Para desarrollo. En producción, considera usar 'true' para HTTPS
+}));
+
+
+
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(express.json());
+
 app.use(express.urlencoded({ extended:true}))
 
-app.use(session({
-    store: MongoStore.create({
-        mongoUrl:"mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0"
+mongoose.connect('mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0')
+// mongoose.connect('mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0')
+// app.use(session({
+//     store: MongoStore.create({
+//         mongoUrl:"mongodb+srv://avacotti:ImOeZUxx2apIDDfy@codercluster0.u4vgkri.mongodb.net/?retryWrites=true&w=majority&appName=CoderCluster0"
         
-    }),
-    secret: "123456789",
-    resave: false,
-    saveUninitialized:false
-}))
+//     }),
+//     secret: "123456789",
+//     resave: false,
+//     saveUninitialized:false
+// }))
 
 app.use("/api/session", sessionsRouter)
-app.use ("/", viewsRouter)
+app.use ("/",  viewsRouter)
+
 
 app.get ('/login', (req, res)=>{
     const {username, password} = req.query
@@ -57,6 +75,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 //Templates
+app.use (cookieParser())
 app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
@@ -66,7 +85,8 @@ app.use(express.static(__dirname + '/public'))
 app.use('/', productsRouter)
 app.use('/', cartsRouter)
 app.use('/', chatRouter)
-app.use('/api/sessions', sessionsRouter);
+app.use('/', sessionsRouter);
+
 
 //Connection DB
 const enviroment = async () => {

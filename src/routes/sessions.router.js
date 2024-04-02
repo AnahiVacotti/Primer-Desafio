@@ -1,5 +1,7 @@
 import express from 'express';
 import userModel from '../dao/models/user.model.js';
+import bcrypt from 'bcrypt';
+
 
 const sessionsRouter = express.Router();
 
@@ -43,21 +45,25 @@ sessionsRouter.post('/api/sessions/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
+        console.log("Contrseña de usuario " + user.password)
+        console.log("Contraseña parametro " + password)
         // Verificar la contraseña
-        const passwordMatch = await bcrypt.compare(password, user.password);
-
-        if (!passwordMatch) {
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-
-        // Guardar la información del usuario en req.session
-        req.session.user = {
+        if (user.password = password){
+            // Guardar la información del usuario en req.session
+            req.session.user = {
             _id: user._id,
             first_name: user.first_name,
             last_name: user.last_name,
             email: user.email,
             age: user.age
         };
+        }
+        else{
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+    
+
+        
 
         res.status(200).json({ message: 'Login successful', user });
     } catch (error) {
@@ -65,5 +71,6 @@ sessionsRouter.post('/api/sessions/login', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 export default sessionsRouter;
